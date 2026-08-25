@@ -222,16 +222,16 @@ private fun AppBottomBar(selected: AppPage, onSelect: (AppPage) -> Unit) {
         Triple(AppPage.PROFILE, "Perfil", Icons.Filled.Person)
     )
     NavigationBar(
-        modifier = Modifier.fillMaxWidth().height(68.dp),
+        modifier = Modifier.fillMaxWidth().navigationBarsPadding().height(76.dp),
         containerColor = Color.White,
-        tonalElevation = 7.dp
+        tonalElevation = 10.dp
     ) {
         items.forEach { (page, label, icon) ->
             NavigationBarItem(
                 selected = selected == page,
                 onClick = { onSelect(page) },
-                icon = { Icon(icon, contentDescription = label, modifier = Modifier.size(21.dp)) },
-                label = { Text(label, fontSize = 7.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
+                icon = { Icon(icon, contentDescription = label, modifier = Modifier.size(23.dp)) },
+                label = { Text(label, fontSize = 8.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Green,
                     selectedTextColor = Green,
@@ -293,17 +293,17 @@ private fun HomeHero() {
         modifier = Modifier.fillMaxWidth().height(270.dp)
             .background(Brush.linearGradient(listOf(Color(0xFFFFFAF0), Color(0xFFF6F8ED))))
     ) {
-        Column(modifier = Modifier.padding(start = 18.dp, top = 20.dp).width(220.dp)) {
-            Text("Olá, Paulo!", color = Ink, fontWeight = FontWeight.Black, fontSize = 28.sp)
-            Text("Que tal continuar\nsua jornada hoje?", color = Muted, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 7.dp))
-            DailyGoalCard()
-        }
         Image(
             painter = painterResource(R.drawable.mascot),
             contentDescription = "Mascote educativo",
             contentScale = ContentScale.Fit,
             modifier = Modifier.align(Alignment.BottomEnd).offset(x = 28.dp, y = 35.dp).width(245.dp).height(260.dp)
         )
+        Column(modifier = Modifier.padding(start = 18.dp, top = 20.dp).width(220.dp)) {
+            Text("Olá, Paulo!", color = Ink, fontWeight = FontWeight.Black, fontSize = 28.sp)
+            Text("Que tal continuar\nsua jornada hoje?", color = Muted, fontWeight = FontWeight.SemiBold, fontSize = 14.sp, lineHeight = 20.sp, modifier = Modifier.padding(top = 7.dp))
+            DailyGoalCard()
+        }
     }
 }
 
@@ -332,20 +332,20 @@ private fun DailyGoalCard() {
 @Composable
 private fun HomePath(onStory: () -> Unit) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 24.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 18.dp),
         shape = RoundedCornerShape(21.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(3.dp)
     ) {
-        Column(Modifier.padding(horizontal = 10.dp, vertical = 16.dp)) {
+        Column(Modifier.padding(horizontal = 10.dp, vertical = 9.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Seu caminho", color = Ink, fontWeight = FontWeight.Black, fontSize = 18.sp)
-                Button(onClick = onStory, contentPadding = ButtonDefaults.ContentPadding, colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Muted), shape = RoundedCornerShape(11.dp)) {
+                Button(onClick = onStory, contentPadding = ButtonDefaults.ContentPadding, colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Muted), shape = RoundedCornerShape(11.dp), modifier = Modifier.height(32.dp)) {
                     Icon(Icons.Filled.Map, contentDescription = null, modifier = Modifier.size(15.dp))
                     Text(" VER MAPA", fontSize = 9.sp, fontWeight = FontWeight.Black)
                 }
             }
-            Box(Modifier.fillMaxWidth().padding(top = 15.dp)) {
+            Box(Modifier.fillMaxWidth().padding(top = 10.dp)) {
                 Canvas(Modifier.fillMaxWidth().height(70.dp)) {
                     drawLine(
                         color = Color(0xFFD9DDDF),
@@ -374,7 +374,7 @@ private fun PathStep(iconRes: Int, label: String, color: Color, selected: Boolea
         Box(
             Modifier.size(if (selected) 68.dp else 58.dp)
                 .then(if (selected) Modifier.shadow(7.dp, CircleShape) else Modifier)
-                .clip(CircleShape).background(Color.White)
+                .background(Color.White, CircleShape)
                 .border(2.dp, color.copy(alpha = .48f), CircleShape),
             contentAlignment = Alignment.Center
         ) {
@@ -387,7 +387,7 @@ private fun PathStep(iconRes: Int, label: String, color: Color, selected: Boolea
             }
             if (completed) {
                 Box(
-                    Modifier.align(Alignment.TopEnd).size(20.dp).clip(CircleShape)
+                    Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp).size(20.dp).clip(CircleShape)
                         .background(Color(0xFFFFB30C)).border(2.dp, Color.White, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
@@ -418,22 +418,22 @@ private fun PracticeSection() {
 
 @Composable
 private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Color, background: Color, modifier: Modifier) {
-    Card(modifier = modifier.height(92.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = background)) {
+    Card(modifier = modifier.height(78.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = background)) {
         Box(Modifier.fillMaxSize()) {
-            Row(Modifier.fillMaxSize().padding(horizontal = 9.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(tone), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(25.dp))
+            Row(Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(tone), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(23.dp))
                 }
-                Column(Modifier.padding(start = 8.dp, end = 5.dp).weight(1f)) {
+                Column(Modifier.padding(start = 7.dp, end = 7.dp).weight(1f)) {
                     Text(title, color = Ink, fontWeight = FontWeight.Black, fontSize = 11.sp)
                     Text(subtitle, color = Muted, fontSize = 8.sp, lineHeight = 9.sp, maxLines = 3)
                 }
             }
             Box(
-                Modifier.align(Alignment.BottomEnd).padding(7.dp).size(20.dp).clip(CircleShape).background(tone),
+                Modifier.align(Alignment.BottomEnd).padding(6.dp).size(18.dp).clip(CircleShape).background(tone),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(painterResource(R.drawable.ic_task_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(11.dp))
+                Icon(painterResource(R.drawable.ic_task_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(10.dp))
             }
         }
     }
@@ -442,22 +442,9 @@ private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Co
 @Composable
 private fun StoryScreen() {
     var chapterVisible by rememberSaveable { mutableStateOf(true) }
-    Box(modifier = Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF193B60), Color(0xFF316F82), Color(0xFF17314E))))) {
-        Canvas(Modifier.fillMaxSize()) {
-            drawCircle(Color(0x3359C45A), radius = size.width * .5f, center = Offset(size.width * .15f, size.height * .47f))
-            drawCircle(Color(0x2267B5E4), radius = size.width * .58f, center = Offset(size.width * .88f, size.height * .7f))
-            drawRoundRect(Color(0x335EC250), topLeft = Offset(size.width * .08f, size.height * .38f), size = Size(size.width * .84f, size.height * .45f), cornerRadius = CornerRadius(45f, 45f))
-        }
+    Box(modifier = Modifier.fillMaxSize().background(DarkBlue)) {
         Column(Modifier.fillMaxSize().padding(14.dp)) {
             PlayerBar()
-            Spacer(Modifier.height(18.dp))
-            Box(Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Filled.Map, null, tint = Color.White.copy(alpha = .9f), modifier = Modifier.size(70.dp))
-                    Text("A Jornada do Aprendizado", color = Color.White, fontWeight = FontWeight.Black, fontSize = 22.sp)
-                    Text("O mapa da história está pronto para receber novos capítulos.", color = Color.White.copy(alpha = .8f), textAlign = TextAlign.Center, fontSize = 12.sp, modifier = Modifier.padding(20.dp))
-                }
-            }
         }
         if (chapterVisible) {
             ChapterOverlay(onClose = { chapterVisible = false })
@@ -470,10 +457,14 @@ private fun PlayerBar() {
     Card(Modifier.fillMaxWidth().height(55.dp), shape = RoundedCornerShape(17.dp), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)), elevation = CardDefaults.cardElevation(6.dp)) {
         Row(Modifier.fillMaxSize().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(39.dp).clip(CircleShape).background(Color(0xFFEAF7E7)).border(2.dp, Green, CircleShape), contentAlignment = Alignment.Center) { Text("PF", color = Green, fontWeight = FontWeight.Black, fontSize = 13.sp) }
-            Column(Modifier.padding(start = 6.dp).weight(1f)) { Text("Paulo", color = Ink, fontWeight = FontWeight.Black, fontSize = 13.sp); Text("Nível 7", color = Muted, fontSize = 8.sp) }
+            Column(Modifier.padding(start = 7.dp).weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text("Paulo", color = Ink, fontWeight = FontWeight.Black, fontSize = 13.sp, lineHeight = 14.sp)
+                Text("Nível 7", color = Muted, fontSize = 9.sp, lineHeight = 10.sp)
+            }
             MiniMapStat(Icons.Filled.LocalFireDepartment, "12", Color(0xFFFFAD16))
             MiniMapStat(Icons.Filled.Diamond, "480", Purple)
             MiniMapStat(Icons.Filled.Favorite, "5", Color(0xFFEF4556))
+            Spacer(Modifier.width(8.dp))
             Icon(Icons.Filled.Settings, null, tint = Muted, modifier = Modifier.size(22.dp))
         }
     }
@@ -481,9 +472,9 @@ private fun PlayerBar() {
 
 @Composable
 private fun MiniMapStat(icon: ImageVector, value: String, color: Color) {
-    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 3.dp)) {
-        Icon(icon, null, tint = color, modifier = Modifier.size(17.dp))
-        Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 9.sp, modifier = Modifier.padding(start = 2.dp))
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 2.dp)) {
+        Icon(icon, null, tint = color, modifier = Modifier.size(18.dp))
+        Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 10.sp, modifier = Modifier.padding(start = 2.dp))
     }
 }
 
