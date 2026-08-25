@@ -80,6 +80,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.zIndex
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -209,12 +210,12 @@ private fun EducationForKidsApp() {
 @Composable
 private fun AppBottomBar(selected: AppPage, modifier: Modifier = Modifier, onSelect: (AppPage) -> Unit) {
     val items = listOf(
-        Triple(AppPage.HOME, "Início", Icons.Filled.Home),
-        Triple(AppPage.STORY, "História", Icons.Filled.Map),
-        Triple(AppPage.LESSONS, "Lições", Icons.Filled.MenuBook),
-        Triple(AppPage.CHALLENGES, "Desafios", Icons.Filled.EmojiEvents),
-        Triple(AppPage.STORE, "Loja", Icons.Filled.Store),
-        Triple(AppPage.PROFILE, "Perfil", Icons.Filled.Person)
+        Triple(AppPage.HOME, "Início", R.drawable.ic_nav_home),
+        Triple(AppPage.STORY, "História", R.drawable.ic_nav_map),
+        Triple(AppPage.LESSONS, "Lições", R.drawable.ic_nav_book),
+        Triple(AppPage.CHALLENGES, "Desafios", R.drawable.ic_nav_trophy),
+        Triple(AppPage.STORE, "Loja", R.drawable.ic_nav_bag),
+        Triple(AppPage.PROFILE, "Perfil", 0)
     )
     Box(
         modifier = modifier.widthIn(max = 430.dp).fillMaxWidth().navigationBarsPadding()
@@ -228,7 +229,7 @@ private fun AppBottomBar(selected: AppPage, modifier: Modifier = Modifier, onSel
             elevation = CardDefaults.cardElevation(10.dp)
         ) {
             Row(Modifier.fillMaxSize().padding(horizontal = 6.dp, vertical = 4.dp)) {
-                items.forEach { (page, label, icon) ->
+                items.forEach { (page, label, iconRes) ->
                     val active = selected == page
                     Box(
                         modifier = Modifier.weight(1f).height(61.dp).clip(RoundedCornerShape(17.dp))
@@ -247,7 +248,7 @@ private fun AppBottomBar(selected: AppPage, modifier: Modifier = Modifier, onSel
                                     Text("PF", color = if (active) Color.White else Color(0xFF747B86), fontWeight = FontWeight.Black, fontSize = 10.sp)
                                 }
                             } else {
-                                Icon(icon, contentDescription = label, tint = if (active) Green else Color(0xFF747B86), modifier = Modifier.size(27.dp))
+                                Icon(painterResource(iconRes), contentDescription = label, tint = if (active) Green else Color(0xFF747B86), modifier = Modifier.size(27.dp))
                             }
                             Spacer(Modifier.height(3.dp))
                             Text(label, color = if (active) Green else Color(0xFF747B86), fontSize = 10.sp, fontWeight = FontWeight.Bold, maxLines = 1)
@@ -402,11 +403,12 @@ private fun PathStep(iconRes: Int, label: String, color: Color, selected: Boolea
             }
             if (completed) {
                 Box(
-                    Modifier.align(Alignment.TopCenter).offset(y = (-7).dp).size(18.dp).clip(CircleShape)
+                    Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp).zIndex(4f)
+                        .size(20.dp).clip(CircleShape)
                         .background(Color(0xFFFFB30C)).border(2.dp, Color.White, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Filled.LocalFireDepartment, null, tint = Color.White, modifier = Modifier.size(10.dp))
+                    Icon(Icons.Filled.LocalFireDepartment, null, tint = Color.White, modifier = Modifier.size(11.dp))
                 }
             }
         }
@@ -456,6 +458,12 @@ private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Co
 private fun StoryScreen() {
     var chapterVisible by rememberSaveable { mutableStateOf(true) }
     Box(modifier = Modifier.fillMaxSize().background(DarkBlue)) {
+        Image(
+            painter = painterResource(R.drawable.story_map_art),
+            contentDescription = "Mapa da jornada",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
         Column(Modifier.fillMaxSize().padding(14.dp)) {
             PlayerBar()
         }
