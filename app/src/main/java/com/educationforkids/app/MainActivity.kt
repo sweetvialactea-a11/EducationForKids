@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -66,7 +67,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -169,48 +169,45 @@ private fun EducationForKidsApp() {
     }
 
     Box(modifier = Modifier.fillMaxSize().statusBarsPadding()) {
-        Scaffold(
-            containerColor = Color.White,
-            bottomBar = {
-                if (page != AppPage.QUIZ) {
-                    AppBottomBar(selected = navPage) { destination ->
-                        page = destination
-                        if (destination == AppPage.LESSONS) selectedTopic = 0
-                    }
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (page) {
+                AppPage.HOME -> HomeScreen(
+                    onStory = { page = AppPage.STORY },
+                    onLessons = { selectedSubject = subjects.first(); selectedTopic = 0; page = AppPage.SUBJECT }
+                )
+                AppPage.STORY -> StoryScreen()
+                AppPage.LESSONS -> SubjectsScreen { subject ->
+                    selectedSubject = subject
+                    selectedTopic = 0
+                    page = AppPage.SUBJECT
                 }
+                AppPage.SUBJECT -> SubjectLessonsScreen(
+                    subject = selectedSubject,
+                    selectedTopic = selectedTopic,
+                    onTopic = { selectedTopic = it },
+                    onBack = { page = AppPage.LESSONS },
+                    onLesson = { page = AppPage.QUIZ }
+                )
+                AppPage.QUIZ -> QuizScreen(onExit = { page = AppPage.SUBJECT })
+                AppPage.CHALLENGES -> PlaceholderScreen(Icons.Filled.EmojiEvents, "Desafios", "Complete missões para ganhar novas recompensas.")
+                AppPage.STORE -> PlaceholderScreen(Icons.Filled.Store, "Loja", "Novos itens educativos chegarão em breve.")
+                AppPage.PROFILE -> ProfileScreen()
             }
-        ) { innerPadding ->
-            Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-                when (page) {
-                    AppPage.HOME -> HomeScreen(
-                        onStory = { page = AppPage.STORY },
-                        onLessons = { selectedSubject = subjects.first(); selectedTopic = 0; page = AppPage.SUBJECT }
-                    )
-                    AppPage.STORY -> StoryScreen()
-                    AppPage.LESSONS -> SubjectsScreen { subject ->
-                        selectedSubject = subject
-                        selectedTopic = 0
-                        page = AppPage.SUBJECT
-                    }
-                    AppPage.SUBJECT -> SubjectLessonsScreen(
-                        subject = selectedSubject,
-                        selectedTopic = selectedTopic,
-                        onTopic = { selectedTopic = it },
-                        onBack = { page = AppPage.LESSONS },
-                        onLesson = { page = AppPage.QUIZ }
-                    )
-                    AppPage.QUIZ -> QuizScreen(onExit = { page = AppPage.SUBJECT })
-                    AppPage.CHALLENGES -> PlaceholderScreen(Icons.Filled.EmojiEvents, "Desafios", "Complete missões para ganhar novas recompensas.")
-                    AppPage.STORE -> PlaceholderScreen(Icons.Filled.Store, "Loja", "Novos itens educativos chegarão em breve.")
-                    AppPage.PROFILE -> ProfileScreen()
-                }
+        }
+        if (page != AppPage.QUIZ) {
+            AppBottomBar(
+                selected = navPage,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) { destination ->
+                page = destination
+                if (destination == AppPage.LESSONS) selectedTopic = 0
             }
         }
     }
 }
 
 @Composable
-private fun AppBottomBar(selected: AppPage, onSelect: (AppPage) -> Unit) {
+private fun AppBottomBar(selected: AppPage, modifier: Modifier = Modifier, onSelect: (AppPage) -> Unit) {
     val items = listOf(
         Triple(AppPage.HOME, "Início", Icons.Filled.Home),
         Triple(AppPage.STORY, "História", Icons.Filled.Map),
@@ -220,11 +217,12 @@ private fun AppBottomBar(selected: AppPage, onSelect: (AppPage) -> Unit) {
         Triple(AppPage.PROFILE, "Perfil", Icons.Filled.Person)
     )
     Box(
-        modifier = Modifier.fillMaxWidth().navigationBarsPadding().height(73.dp)
+        modifier = modifier.widthIn(max = 430.dp).fillMaxWidth().navigationBarsPadding()
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Card(
-            modifier = Modifier.fillMaxSize(),
-            shape = RoundedCornerShape(0.dp),
+            modifier = Modifier.fillMaxWidth().height(73.dp),
+            shape = RoundedCornerShape(24.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)),
             border = BorderStroke(1.dp, Color(0xFFEEF0EF)),
             elevation = CardDefaults.cardElevation(10.dp)
@@ -269,12 +267,12 @@ private fun HomeScreen(onStory: () -> Unit, onLessons: () -> Unit) {
         Button(
             onClick = onLessons,
             modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).height(46.dp),
-            shape = RoundedCornerShape(15.dp),
+            shape = RoundedCornerShape(0.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Green)
         ) { Text("CONTINUAR LIÇÃO", fontWeight = FontWeight.Black, fontSize = 14.sp) }
         HomePath(onStory)
         PracticeSection()
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(116.dp))
     }
 }
 
@@ -328,7 +326,7 @@ private fun HomeHero() {
 private fun DailyGoalCard() {
     Card(
         modifier = Modifier.width(188.dp).padding(top = 8.dp),
-        shape = RoundedCornerShape(15.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
@@ -350,14 +348,14 @@ private fun DailyGoalCard() {
 private fun HomePath(onStory: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp, vertical = 18.dp),
-        shape = RoundedCornerShape(21.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(3.dp)
     ) {
         Column(Modifier.padding(horizontal = 10.dp, vertical = 9.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
                 Text("Seu caminho", color = Ink, fontWeight = FontWeight.Black, fontSize = 17.sp)
-                Button(onClick = onStory, contentPadding = ButtonDefaults.ContentPadding, colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Muted), shape = RoundedCornerShape(11.dp), modifier = Modifier.height(32.dp)) {
+                Button(onClick = onStory, contentPadding = ButtonDefaults.ContentPadding, colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Muted), shape = RoundedCornerShape(0.dp), modifier = Modifier.height(32.dp)) {
                     Icon(Icons.Filled.Map, contentDescription = null, modifier = Modifier.size(14.dp))
                     Text(" VER MAPA", fontSize = 8.sp, fontWeight = FontWeight.Black)
                 }
@@ -435,9 +433,9 @@ private fun PracticeSection() {
 
 @Composable
 private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Color, background: Color, modifier: Modifier) {
-    Card(modifier = modifier.height(68.dp), shape = RoundedCornerShape(15.dp), colors = CardDefaults.cardColors(containerColor = background)) {
-        Row(Modifier.fillMaxSize().padding(horizontal = 7.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(tone), contentAlignment = Alignment.Center) {
+    Card(modifier = modifier.height(56.dp), shape = RoundedCornerShape(0.dp), colors = CardDefaults.cardColors(containerColor = background)) {
+        Row(Modifier.fillMaxSize().padding(horizontal = 7.dp, vertical = 3.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(32.dp).background(tone), contentAlignment = Alignment.Center) {
                 Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(22.dp))
             }
             Column(Modifier.padding(start = 6.dp, end = 4.dp).weight(1f)) {
@@ -469,7 +467,7 @@ private fun StoryScreen() {
 
 @Composable
 private fun PlayerBar() {
-    Card(Modifier.fillMaxWidth().height(55.dp), shape = RoundedCornerShape(17.dp), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)), elevation = CardDefaults.cardElevation(6.dp)) {
+    Card(Modifier.fillMaxWidth().height(55.dp), shape = RoundedCornerShape(0.dp), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)), elevation = CardDefaults.cardElevation(6.dp)) {
         Row(Modifier.fillMaxSize().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.size(39.dp).clip(CircleShape).background(Color(0xFFEAF7E7)).border(2.dp, Green, CircleShape), contentAlignment = Alignment.Center) { Text("PF", color = Green, fontWeight = FontWeight.Black, fontSize = 13.sp) }
             Column(Modifier.padding(start = 7.dp).weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
@@ -497,7 +495,7 @@ private fun MiniMapStat(icon: ImageVector, value: String, color: Color) {
 private fun ChapterOverlay(onClose: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().height(190.dp).padding(horizontal = 14.dp).offset(y = 82.dp),
-        shape = RoundedCornerShape(21.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = Color(0xFF13243A)),
         elevation = CardDefaults.cardElevation(14.dp)
     ) {
@@ -506,7 +504,7 @@ private fun ChapterOverlay(onClose: () -> Unit) {
                 Text("CAPÍTULO 1", color = Color(0xFF6BD044), fontWeight = FontWeight.Black, fontSize = 10.sp)
                 Text("A Jornada do\nAprendizado", color = Color.White, fontWeight = FontWeight.Black, fontSize = 20.sp, lineHeight = 22.sp, modifier = Modifier.padding(top = 6.dp))
                 Text("Embarque em uma aventura para recuperar os livros perdidos do Conhecimento!", color = Color.White.copy(alpha = .9f), fontSize = 9.sp, lineHeight = 12.sp, modifier = Modifier.padding(top = 5.dp))
-                Button(onClick = onClose, colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = .13f)), contentPadding = ButtonDefaults.ContentPadding, modifier = Modifier.padding(top = 5.dp).height(30.dp)) {
+                Button(onClick = onClose, colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = .13f)), contentPadding = ButtonDefaults.ContentPadding, shape = RoundedCornerShape(0.dp), modifier = Modifier.padding(top = 5.dp).height(30.dp)) {
                     Icon(Icons.Filled.MenuBook, null, modifier = Modifier.size(14.dp))
                     Text(" VER HISTÓRIA", fontSize = 8.sp, fontWeight = FontWeight.Black)
                 }
@@ -535,7 +533,7 @@ private fun SubjectsScreen(onSubject: (Subject) -> Unit) {
 private fun SubjectCard(subject: Subject, modifier: Modifier, onSubject: (Subject) -> Unit) {
     Card(
         modifier = modifier.aspectRatio(1f).clickable { onSubject(subject) },
-        shape = RoundedCornerShape(18.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = subject.color),
         elevation = CardDefaults.cardElevation(5.dp)
     ) {
@@ -550,7 +548,7 @@ private fun SubjectCard(subject: Subject, modifier: Modifier, onSubject: (Subjec
 private fun SubjectLessonsScreen(subject: Subject, selectedTopic: Int, onTopic: (Int) -> Unit, onBack: () -> Unit, onLesson: () -> Unit) {
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).background(Color.White)) {
         Box(Modifier.fillMaxWidth().height(128.dp).background(DarkBlue)) {
-            Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = .12f)), modifier = Modifier.padding(14.dp).height(34.dp), contentPadding = ButtonDefaults.ContentPadding) {
+            Button(onClick = onBack, colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = .12f)), shape = RoundedCornerShape(0.dp), modifier = Modifier.padding(14.dp).height(34.dp), contentPadding = ButtonDefaults.ContentPadding) {
                 Icon(Icons.Filled.ArrowBack, null, modifier = Modifier.size(16.dp))
                 Text(" Voltar às matérias", fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
@@ -606,7 +604,7 @@ private fun lessonsFor(subject: Subject, topic: Int): List<Lesson> {
 private fun LessonCard(subject: Subject, lesson: Lesson, number: Int, onLesson: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth().clickable(onClick = onLesson),
-        shape = RoundedCornerShape(19.dp),
+        shape = RoundedCornerShape(0.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
@@ -633,7 +631,7 @@ private fun LessonCard(subject: Subject, lesson: Lesson, number: Int, onLesson: 
 
 @Composable
 private fun LessonArtwork(subject: Subject, number: Int, modifier: Modifier) {
-    Box(modifier.clip(RoundedCornerShape(topStart = 19.dp)).background(Brush.linearGradient(listOf(subject.color.copy(alpha = .62f), subject.color)))) {
+    Box(modifier.background(Brush.linearGradient(listOf(subject.color.copy(alpha = .62f), subject.color)))) {
         Canvas(Modifier.fillMaxSize()) {
             drawCircle(Color.White.copy(alpha = .18f), radius = size.minDimension * .32f, center = Offset(size.width * .25f, size.height * .25f))
             drawCircle(Color.White.copy(alpha = .12f), radius = size.minDimension * .40f, center = Offset(size.width * .88f, size.height * .85f))
@@ -663,7 +661,7 @@ private fun QuizScreen(onExit: () -> Unit) {
             Icon(Icons.Filled.EmojiEvents, null, tint = Orange, modifier = Modifier.size(82.dp))
             Text("Lição concluída!", color = Ink, fontWeight = FontWeight.Black, fontSize = 27.sp, modifier = Modifier.padding(top = 16.dp))
             Text("Você acertou $correctCount de ${portugueseQuiz.size} perguntas.", color = Muted, fontSize = 14.sp, modifier = Modifier.padding(top = 8.dp))
-            Button(onClick = onExit, modifier = Modifier.fillMaxWidth().padding(top = 26.dp).height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Green), shape = RoundedCornerShape(15.dp)) { Text("VOLTAR ÀS LIÇÕES", fontWeight = FontWeight.Black) }
+            Button(onClick = onExit, modifier = Modifier.fillMaxWidth().padding(top = 26.dp).height(50.dp), colors = ButtonDefaults.buttonColors(containerColor = Green), shape = RoundedCornerShape(0.dp)) { Text("VOLTAR ÀS LIÇÕES", fontWeight = FontWeight.Black) }
         }
         return
     }
@@ -688,13 +686,13 @@ private fun QuizScreen(onExit: () -> Unit) {
             }
             Card(
                 modifier = Modifier.fillMaxWidth().padding(bottom = 11.dp).clickable(enabled = !checked) { selected = answerIndex },
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(0.dp),
                 colors = CardDefaults.cardColors(containerColor = if (chosen || (checked && answerIndex == question.correct)) answerColor.copy(alpha = .10f) else Color.White),
                 border = androidx.compose.foundation.BorderStroke(if (chosen || (checked && answerIndex == question.correct)) 2.dp else 1.dp, answerColor)
             ) { Text(answer, color = Ink, fontWeight = FontWeight.Bold, fontSize = 15.sp, modifier = Modifier.fillMaxWidth().padding(17.dp)) }
         }
         if (checked) {
-            Card(colors = CardDefaults.cardColors(containerColor = if (selected == question.correct) Color(0xFFECF9E9) else Color(0xFFFFEEEE)), shape = RoundedCornerShape(14.dp), modifier = Modifier.fillMaxWidth()) {
+            Card(colors = CardDefaults.cardColors(containerColor = if (selected == question.correct) Color(0xFFECF9E9) else Color(0xFFFFEEEE)), shape = RoundedCornerShape(0.dp), modifier = Modifier.fillMaxWidth()) {
                 Column(Modifier.padding(13.dp)) {
                     Text(if (selected == question.correct) "Muito bem!" else "Vamos aprender!", color = if (selected == question.correct) Green else Color(0xFFE45B5B), fontWeight = FontWeight.Black)
                     Text(question.explanation, color = Muted, fontSize = 11.sp, modifier = Modifier.padding(top = 3.dp))
@@ -718,7 +716,7 @@ private fun QuizScreen(onExit: () -> Unit) {
             enabled = selected >= 0,
             modifier = Modifier.fillMaxWidth().height(52.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Green),
-            shape = RoundedCornerShape(15.dp)
+            shape = RoundedCornerShape(0.dp)
         ) { Text(if (checked) "CONTINUAR" else "VERIFICAR", fontWeight = FontWeight.Black) }
     }
 }
@@ -738,7 +736,7 @@ private fun ProfileScreen() {
         Box(Modifier.padding(top = 38.dp).size(100.dp).clip(CircleShape).background(Green), contentAlignment = Alignment.Center) { Text("PF", color = Color.White, fontWeight = FontWeight.Black, fontSize = 32.sp) }
         Text("Paulo", color = Ink, fontWeight = FontWeight.Black, fontSize = 26.sp, modifier = Modifier.padding(top = 14.dp))
         Text("Nível 7 · 480 XP", color = Muted, fontSize = 13.sp)
-        Card(Modifier.fillMaxWidth().padding(top = 28.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF6FAF5)), shape = RoundedCornerShape(20.dp)) {
+        Card(Modifier.fillMaxWidth().padding(top = 28.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFF6FAF5)), shape = RoundedCornerShape(0.dp)) {
             Column(Modifier.padding(18.dp)) {
                 Text("Seu progresso", color = Ink, fontWeight = FontWeight.Black, fontSize = 17.sp)
                 Text("12 dias de sequência", color = Muted, fontSize = 12.sp, modifier = Modifier.padding(top = 8.dp))
