@@ -87,6 +87,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -221,16 +222,16 @@ private fun AppBottomBar(selected: AppPage, onSelect: (AppPage) -> Unit) {
         Triple(AppPage.PROFILE, "Perfil", Icons.Filled.Person)
     )
     NavigationBar(
-        modifier = Modifier.fillMaxWidth().navigationBarsPadding().height(76.dp),
+        modifier = Modifier.fillMaxWidth().height(68.dp),
         containerColor = Color.White,
-        tonalElevation = 10.dp
+        tonalElevation = 7.dp
     ) {
         items.forEach { (page, label, icon) ->
             NavigationBarItem(
                 selected = selected == page,
                 onClick = { onSelect(page) },
-                icon = { Icon(icon, contentDescription = label, modifier = Modifier.size(23.dp)) },
-                label = { Text(label, fontSize = 8.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
+                icon = { Icon(icon, contentDescription = label, modifier = Modifier.size(21.dp)) },
+                label = { Text(label, fontSize = 7.sp, fontWeight = FontWeight.Bold, maxLines = 1) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = Green,
                     selectedTextColor = Green,
@@ -263,29 +264,26 @@ private fun HomeScreen(onStory: () -> Unit, onLessons: () -> Unit) {
 @Composable
 private fun StatsBar() {
     Row(
-        modifier = Modifier.fillMaxWidth().height(72.dp).background(Color.White).padding(horizontal = 15.dp),
+        modifier = Modifier.fillMaxWidth().height(54.dp).background(Color.White).padding(horizontal = 15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        MiniStat(Icons.Filled.LocalFireDepartment, "12", "Sequência", Color(0xFFFFAD16))
-        MiniStat(Icons.Filled.Diamond, "480", "XP", Purple)
-        MiniStat(Icons.Filled.Favorite, "5", "Vidas", Color(0xFFEF4556))
+        MiniStat(Icons.Filled.LocalFireDepartment, "12", Color(0xFFFFAD16))
+        MiniStat(Icons.Filled.Diamond, "480", Purple)
+        MiniStat(Icons.Filled.Favorite, "5", Color(0xFFEF4556))
         Box {
-            Icon(Icons.Filled.Notifications, contentDescription = "Notificações", tint = Color(0xFF626976), modifier = Modifier.size(29.dp))
-            Box(Modifier.align(Alignment.TopEnd).size(10.dp).clip(CircleShape).background(Color(0xFFFF4B50)))
+            Icon(Icons.Filled.Notifications, contentDescription = "Notificações", tint = Color(0xFF626976), modifier = Modifier.size(25.dp))
+            Box(Modifier.align(Alignment.TopEnd).size(9.dp).clip(CircleShape).background(Color(0xFFFF4B50)))
         }
     }
 }
 
 @Composable
-private fun MiniStat(icon: ImageVector, value: String, label: String, color: Color) {
+private fun MiniStat(icon: ImageVector, value: String, color: Color) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(27.dp))
-        Spacer(Modifier.width(5.dp))
-        Column {
-            Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 15.sp)
-            Text(label, color = Muted, fontWeight = FontWeight.SemiBold, fontSize = 9.sp)
-        }
+        Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(25.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 16.sp)
     }
 }
 
@@ -347,25 +345,56 @@ private fun HomePath(onStory: () -> Unit) {
                     Text(" VER MAPA", fontSize = 9.sp, fontWeight = FontWeight.Black)
                 }
             }
-            Row(Modifier.fillMaxWidth().padding(top = 17.dp), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Top) {
-                PathStep(Icons.Filled.ChatBubble, "Saudações", Green, false)
-                PathStep(Icons.Filled.Headphones, "Escuta", Blue, false)
-                PathStep(Icons.Filled.MenuBook, "Vocabulário", Purple, true)
-                PathStep(Icons.Filled.Lock, "Frases", Color(0xFFB9BEC3), false)
-                PathStep(Icons.Filled.Lock, "Conversa", Color(0xFFB9BEC3), false)
+            Box(Modifier.fillMaxWidth().padding(top = 15.dp)) {
+                Canvas(Modifier.fillMaxWidth().height(70.dp)) {
+                    drawLine(
+                        color = Color(0xFFD9DDDF),
+                        start = Offset(35.dp.toPx(), 35.dp.toPx()),
+                        end = Offset(size.width - 35.dp.toPx(), 35.dp.toPx()),
+                        strokeWidth = 2.dp.toPx(),
+                        cap = StrokeCap.Round,
+                        pathEffect = PathEffect.dashPathEffect(floatArrayOf(6.dp.toPx(), 6.dp.toPx()))
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.Top) {
+                    PathStep(R.drawable.ic_path_chat, "1. Saudações", Green, selected = false, completed = true)
+                    PathStep(R.drawable.ic_path_headphones, "2. Escuta", Blue, selected = false, completed = true)
+                    PathStep(R.drawable.ic_path_book, "3. Vocabulário", Purple, selected = true)
+                    PathStep(R.drawable.ic_path_lock, "4. Frases", Color(0xFFB9BEC3), selected = false)
+                    PathStep(R.drawable.ic_path_lock, "5. Conversa", Color(0xFFB9BEC3), selected = false)
+                }
             }
         }
     }
 }
 
 @Composable
-private fun PathStep(icon: ImageVector, label: String, color: Color, selected: Boolean) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(68.dp)) {
+private fun PathStep(iconRes: Int, label: String, color: Color, selected: Boolean, completed: Boolean = false) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.width(69.dp)) {
         Box(
-            Modifier.size(if (selected) 64.dp else 54.dp).clip(CircleShape).background(color)
-                .border(3.dp, Color.White, CircleShape).then(if (selected) Modifier.shadow(6.dp, CircleShape) else Modifier),
+            Modifier.size(if (selected) 68.dp else 58.dp)
+                .then(if (selected) Modifier.shadow(7.dp, CircleShape) else Modifier)
+                .clip(CircleShape).background(Color.White)
+                .border(2.dp, color.copy(alpha = .48f), CircleShape),
             contentAlignment = Alignment.Center
-        ) { Icon(icon, contentDescription = null, tint = Color.White, modifier = Modifier.size(if (selected) 29.dp else 24.dp)) }
+        ) {
+            Box(
+                Modifier.size(if (selected) 58.dp else 48.dp).clip(CircleShape)
+                    .background(Brush.linearGradient(listOf(color.copy(alpha = .82f), color))),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(painterResource(iconRes), contentDescription = null, tint = Color.Unspecified, modifier = Modifier.size(if (selected) 30.dp else 25.dp))
+            }
+            if (completed) {
+                Box(
+                    Modifier.align(Alignment.TopEnd).size(20.dp).clip(CircleShape)
+                        .background(Color(0xFFFFB30C)).border(2.dp, Color.White, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Filled.LocalFireDepartment, null, tint = Color.White, modifier = Modifier.size(11.dp))
+                }
+            }
+        }
         Text(label, color = Ink, fontWeight = if (selected) FontWeight.Black else FontWeight.SemiBold, fontSize = 8.sp, textAlign = TextAlign.Center, lineHeight = 9.sp, modifier = Modifier.padding(top = 5.dp))
         if (selected) Text("Atual", color = Purple, fontWeight = FontWeight.Black, fontSize = 9.sp, modifier = Modifier.padding(top = 1.dp))
         else Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = if (color == Color(0xFFB9BEC3)) Color.Transparent else Green, modifier = Modifier.padding(top = 3.dp).size(17.dp))
@@ -377,24 +406,34 @@ private fun PracticeSection() {
     Column(Modifier.fillMaxWidth().padding(horizontal = 14.dp)) {
         Text("Pratique mais", color = Ink, fontWeight = FontWeight.Black, fontSize = 18.sp, modifier = Modifier.padding(bottom = 12.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-            PracticeCard("Desafios", "Ganhe recompensas", Icons.Filled.EmojiEvents, Orange, Color(0xFFFFF9E7), Modifier.weight(1f))
-            PracticeCard("Revisão", "Reforce o que aprendeu", Icons.Filled.Bolt, Blue, Color(0xFFEEF8FF), Modifier.weight(1f))
+            PracticeCard("Desafios", "Complete desafios e ganhe recompensas!", R.drawable.ic_task_trophy, Orange, Color(0xFFFFF9E7), Modifier.weight(1f))
+            PracticeCard("Revisão", "Reforce o que você já aprendeu.", R.drawable.ic_task_bolt, Blue, Color(0xFFEEF8FF), Modifier.weight(1f))
         }
         Row(Modifier.fillMaxWidth().padding(top = 9.dp), horizontalArrangement = Arrangement.spacedBy(9.dp)) {
-            PracticeCard("Testes", "Teste seus conhecimentos", Icons.Filled.School, Green, Color(0xFFF4FCED), Modifier.weight(1f))
-            PracticeCard("Histórias", "Melhore seu entendimento", Icons.Filled.MenuBook, Purple, Color(0xFFFAF1FF), Modifier.weight(1f))
+            PracticeCard("Testes", "Teste seus conhecimentos.", R.drawable.ic_task_target, Green, Color(0xFFF4FCED), Modifier.weight(1f))
+            PracticeCard("Histórias", "Leia e melhore seu entendimento.", R.drawable.ic_path_book, Purple, Color(0xFFFAF1FF), Modifier.weight(1f))
         }
     }
 }
 
 @Composable
-private fun PracticeCard(title: String, subtitle: String, icon: ImageVector, tone: Color, background: Color, modifier: Modifier) {
+private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Color, background: Color, modifier: Modifier) {
     Card(modifier = modifier.height(92.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = background)) {
-        Row(Modifier.fillMaxSize().padding(10.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(tone), contentAlignment = Alignment.Center) { Icon(icon, null, tint = Color.White, modifier = Modifier.size(25.dp)) }
-            Column(Modifier.padding(start = 8.dp)) {
-                Text(title, color = Ink, fontWeight = FontWeight.Black, fontSize = 11.sp)
-                Text(subtitle, color = Muted, fontSize = 8.sp, lineHeight = 10.sp)
+        Box(Modifier.fillMaxSize()) {
+            Row(Modifier.fillMaxSize().padding(horizontal = 9.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.size(40.dp).clip(RoundedCornerShape(12.dp)).background(tone), contentAlignment = Alignment.Center) {
+                    Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(25.dp))
+                }
+                Column(Modifier.padding(start = 8.dp, end = 5.dp).weight(1f)) {
+                    Text(title, color = Ink, fontWeight = FontWeight.Black, fontSize = 11.sp)
+                    Text(subtitle, color = Muted, fontSize = 8.sp, lineHeight = 9.sp, maxLines = 3)
+                }
+            }
+            Box(
+                Modifier.align(Alignment.BottomEnd).padding(7.dp).size(20.dp).clip(CircleShape).background(tone),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(painterResource(R.drawable.ic_task_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(11.dp))
             }
         }
     }
@@ -428,23 +467,23 @@ private fun StoryScreen() {
 
 @Composable
 private fun PlayerBar() {
-    Card(Modifier.fillMaxWidth().height(66.dp), shape = RoundedCornerShape(19.dp), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)), elevation = CardDefaults.cardElevation(7.dp)) {
-        Row(Modifier.fillMaxSize().padding(horizontal = 9.dp), verticalAlignment = Alignment.CenterVertically) {
-            Box(Modifier.size(47.dp).clip(CircleShape).background(Color(0xFFEAF7E7)).border(3.dp, Green, CircleShape), contentAlignment = Alignment.Center) { Text("PF", color = Green, fontWeight = FontWeight.Black, fontSize = 15.sp) }
-            Column(Modifier.padding(start = 7.dp).weight(1f)) { Text("Paulo", color = Ink, fontWeight = FontWeight.Black, fontSize = 14.sp); Text("Nível 7", color = Muted, fontSize = 9.sp) }
+    Card(Modifier.fillMaxWidth().height(55.dp), shape = RoundedCornerShape(17.dp), colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)), elevation = CardDefaults.cardElevation(6.dp)) {
+        Row(Modifier.fillMaxSize().padding(horizontal = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(39.dp).clip(CircleShape).background(Color(0xFFEAF7E7)).border(2.dp, Green, CircleShape), contentAlignment = Alignment.Center) { Text("PF", color = Green, fontWeight = FontWeight.Black, fontSize = 13.sp) }
+            Column(Modifier.padding(start = 6.dp).weight(1f)) { Text("Paulo", color = Ink, fontWeight = FontWeight.Black, fontSize = 13.sp); Text("Nível 7", color = Muted, fontSize = 8.sp) }
             MiniMapStat(Icons.Filled.LocalFireDepartment, "12", Color(0xFFFFAD16))
             MiniMapStat(Icons.Filled.Diamond, "480", Purple)
             MiniMapStat(Icons.Filled.Favorite, "5", Color(0xFFEF4556))
-            Icon(Icons.Filled.Settings, null, tint = Muted, modifier = Modifier.size(25.dp))
+            Icon(Icons.Filled.Settings, null, tint = Muted, modifier = Modifier.size(22.dp))
         }
     }
 }
 
 @Composable
 private fun MiniMapStat(icon: ImageVector, value: String, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 4.dp)) {
-        Icon(icon, null, tint = color, modifier = Modifier.size(20.dp))
-        Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 9.sp)
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 3.dp)) {
+        Icon(icon, null, tint = color, modifier = Modifier.size(17.dp))
+        Text(value, color = color, fontWeight = FontWeight.Black, fontSize = 9.sp, modifier = Modifier.padding(start = 2.dp))
     }
 }
 
