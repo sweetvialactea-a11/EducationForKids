@@ -220,11 +220,11 @@ private fun AppBottomBar(selected: AppPage, onSelect: (AppPage) -> Unit) {
         Triple(AppPage.PROFILE, "Perfil", Icons.Filled.Person)
     )
     Box(
-        modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal = 8.dp, vertical = 8.dp).height(73.dp)
+        modifier = Modifier.fillMaxWidth().navigationBarsPadding().height(73.dp)
     ) {
         Card(
             modifier = Modifier.fillMaxSize(),
-            shape = RoundedCornerShape(24.dp),
+            shape = RoundedCornerShape(0.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = .96f)),
             border = BorderStroke(1.dp, Color(0xFFEEF0EF)),
             elevation = CardDefaults.cardElevation(10.dp)
@@ -404,7 +404,7 @@ private fun PathStep(iconRes: Int, label: String, color: Color, selected: Boolea
             }
             if (completed) {
                 Box(
-                    Modifier.align(Alignment.TopEnd).offset(x = 4.dp, y = (-4).dp).size(18.dp).clip(CircleShape)
+                    Modifier.align(Alignment.TopCenter).offset(y = (-7).dp).size(18.dp).clip(CircleShape)
                         .background(Color(0xFFFFB30C)).border(2.dp, Color.White, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
@@ -435,22 +435,20 @@ private fun PracticeSection() {
 
 @Composable
 private fun PracticeCard(title: String, subtitle: String, iconRes: Int, tone: Color, background: Color, modifier: Modifier) {
-    Card(modifier = modifier.height(78.dp), shape = RoundedCornerShape(16.dp), colors = CardDefaults.cardColors(containerColor = background)) {
-        Box(Modifier.fillMaxSize()) {
-            Row(Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-                Box(Modifier.size(36.dp).clip(RoundedCornerShape(11.dp)).background(tone), contentAlignment = Alignment.Center) {
-                    Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(23.dp))
-                }
-                Column(Modifier.padding(start = 7.dp, end = 7.dp).weight(1f)) {
-                    Text(title, color = Ink, fontWeight = FontWeight.Black, fontSize = 11.sp)
-                    Text(subtitle, color = Muted, fontSize = 8.sp, lineHeight = 9.sp, maxLines = 3)
-                }
+    Card(modifier = modifier.height(68.dp), shape = RoundedCornerShape(15.dp), colors = CardDefaults.cardColors(containerColor = background)) {
+        Row(Modifier.fillMaxSize().padding(horizontal = 7.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.size(34.dp).clip(RoundedCornerShape(10.dp)).background(tone), contentAlignment = Alignment.Center) {
+                Icon(painterResource(iconRes), null, tint = Color.Unspecified, modifier = Modifier.size(22.dp))
+            }
+            Column(Modifier.padding(start = 6.dp, end = 4.dp).weight(1f)) {
+                Text(title, color = Ink, fontWeight = FontWeight.Black, fontSize = 10.sp, maxLines = 1)
+                Text(subtitle, color = Muted, fontSize = 7.sp, lineHeight = 8.sp, maxLines = 2)
             }
             Box(
-                Modifier.align(Alignment.BottomEnd).padding(6.dp).size(18.dp).clip(CircleShape).background(tone),
+                Modifier.size(20.dp).clip(CircleShape).background(tone),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(painterResource(R.drawable.ic_task_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(10.dp))
+                Icon(painterResource(R.drawable.ic_task_arrow), null, tint = Color.Unspecified, modifier = Modifier.size(11.dp))
             }
         }
     }
